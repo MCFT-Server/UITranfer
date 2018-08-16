@@ -9,8 +9,8 @@ import cn.nukkit.Player;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerFormRespondedEvent;
-import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerJoinEvent;
+import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindowSimple;
@@ -30,12 +30,14 @@ public class EventListenr implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		this.plugin.getServer().getScheduler().scheduleDelayedTask(new Task() {
-			@Override
-			public void onRun(int currentTick) {
-				showTransferForm(event.getPlayer());
-			}
-		}, 20 * 3); 
+		if (this.plugin.getConfig().getBoolean("joinTransfer")) {
+			this.plugin.getServer().getScheduler().scheduleDelayedTask(new Task() {
+				@Override
+				public void onRun(int currentTick) {
+					showTransferForm(event.getPlayer());
+				}
+			}, 20 * 3); 
+		}
 	}
 	
 	@EventHandler
@@ -58,12 +60,16 @@ public class EventListenr implements Listener {
 		}
 	}
 	
-	public void onPlayerTouch(PlayerInteractEvent event) {
-		event.setCancelled();
-		showTransferForm(event.getPlayer());
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		if (this.plugin.getConfig().getBoolean("joinTransfer")) {
+			Player player = event.getPlayer();
+			event.setCancelled();
+			player.sendTip("UI가 보이지 않는다면 /서버이동 명령어를 입력해주세요");
+		}
 	}
 	
-	public void showTransferForm(Player player) {
+	public int showTransferForm(Player player) {
 		FormWindowSimple form = new FormWindowSimple("서버 목록", "접속할 서버를 선택하세요.");
 		ConfigSection section = this.plugin.getConfig().getSection("list");
 		for (Entry<String, Object> entry : section.entrySet()) {
@@ -72,5 +78,6 @@ public class EventListenr implements Listener {
 		
 		int id = player.showFormWindow(form);
 		requestList.add(id);
+		return id;
 	}
 }
