@@ -46,7 +46,9 @@ public class EventListenr implements Listener {
 			FormResponseSimple response = (FormResponseSimple) event.getResponse();
 			Player player = event.getPlayer();
 			if (response == null) {
-				player.kick(TextFormat.DARK_AQUA + "서버를 선택하지 않아서 강퇴처리되었습니다.", false);
+				if (this.plugin.getConfig().getBoolean("joinTransfer")) {
+					player.kick(TextFormat.DARK_AQUA + "서버를 선택하지 않아서 강퇴처리되었습니다.", false);
+				}
 				return;
 			}
 			ElementButton button = response.getClickedButton();
