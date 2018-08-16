@@ -16,6 +16,7 @@ import cn.nukkit.form.response.FormResponseSimple;
 import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ConfigSection;
+import cn.nukkit.utils.TextFormat;
 import maru.uitransfer.Main;
 
 public class EventListenr implements Listener {
@@ -43,7 +44,7 @@ public class EventListenr implements Listener {
 			FormResponseSimple response = (FormResponseSimple) event.getResponse();
 			Player player = event.getPlayer();
 			if (response == null) {
-				showTransferForm(player);
+				player.kick(TextFormat.DARK_AQUA + "서버를 선택하지 않아서 강퇴처리되었습니다.", false);
 				return;
 			}
 			ElementButton button = response.getClickedButton();
