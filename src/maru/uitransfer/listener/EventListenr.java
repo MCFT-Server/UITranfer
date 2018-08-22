@@ -1,11 +1,8 @@
 package maru.uitransfer.listener;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
@@ -15,21 +12,20 @@ import cn.nukkit.event.player.PlayerFormRespondedEvent;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerMoveEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
-import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.response.FormResponseSimple;
-import cn.nukkit.form.window.FormWindowSimple;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.ConfigSection;
 import cn.nukkit.utils.TextFormat;
 import maru.uitransfer.Main;
+import maru.uitransfer.form.TransferForm;
 import maru.uitransfer.query.Query;
 import maru.uitransfer.query.QueryData;
 
 public class EventListenr implements Listener {
 	private Main plugin;
 	
-	private List<Integer> requestList = new ArrayList<>();
+	private Map<Integer, TransferForm> requestList = new HashMap<>();
 	
 	public EventListenr(Main plugin) {
 		this.plugin = plugin;
@@ -49,8 +45,9 @@ public class EventListenr implements Listener {
 	
 	@EventHandler
 	public void onFormResponse(PlayerFormRespondedEvent event) {
-		if (requestList.contains(event.getFormID())) {
+		if (requestList.containsKey(event.getFormID())) {
 			FormResponseSimple response = (FormResponseSimple) event.getResponse();
+			TransferForm form = requestList.get(event.getFormID());
 			Player player = event.getPlayer();
 			if (response == null) {
 				if (this.plugin.getConfig().getBoolean("joinTransfer")) {
@@ -58,9 +55,7 @@ public class EventListenr implements Listener {
 				}
 				return;
 			}
-			ElementButton button = response.getClickedButton();
-			
-			String address = this.plugin.getConfig().getSection("list").getString(button.getText());
+			String address = form.getButtonData(response.getClickedButtonId());
 			String[] iport = address.split(":");
 			InetSocketAddress socket = new InetSocketAddress(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
 			player.transfer(socket);
@@ -99,24 +94,10 @@ public class EventListenr implements Listener {
 			
 			@Override
 			public void onRun() {
-				FormWindowSimple form = new FormWindowSimple("서버 목록", "접속할 서버를 선택하세요.");
-				ConfigSection section = plugin.getConfig().getSection("list");
-				Map<Object, String> online = new HashMap<>();
+				TransferForm form = new TransferForm("서버 목록", "접속할 서버를 선택하세요.", plugin);
 				
-				section.entrySet().parallelStream().forEach(entry -> {
-					String[] iport = entry.getValue().toString().split(":");
-					Query query = new Query(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
-					QueryData data = query.send();
-					String msg = data.status ? "접속자 수: (" + data.onlinePlayers + "/" + data.maxPlayers + ")" : "서버 OFF";
-					online.put(entry.getKey(), msg);
-				});
-				
-				for (Entry<String, Object> entry : section.entrySet()) {
-					form.addButton(new ElementButton(entry.getKey() + "\n" + online.get(entry.getKey())));
-				}
-				
-				int id = player.showFormWindow(form);
-				requestList.add(id);
+				int id = player.showFormWindow(form.getForm());
+				requestList.put(id, form);
 			}
 		});
 	}
