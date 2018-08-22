@@ -1,6 +1,6 @@
 name: UITransfer
 main: maru.uitransfer.Main
 author: maru
-version: 1.2.0
+version: 1.2.1
 api: [1.0.0]
 

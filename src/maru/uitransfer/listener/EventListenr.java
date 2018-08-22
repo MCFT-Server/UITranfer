@@ -107,7 +107,8 @@ public class EventListenr implements Listener {
 					String[] iport = entry.getValue().toString().split(":");
 					Query query = new Query(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
 					QueryData data = query.send();
-					online.put(entry.getKey(), "접속자 수: (" + data.onlinePlayers + "/" + data.maxPlayers + ")");
+					String msg = data.status ? "접속자 수: (" + data.onlinePlayers + "/" + data.maxPlayers + ")" : "서버 OFF";
+					online.put(entry.getKey(), msg);
 				});
 				
 				for (Entry<String, Object> entry : section.entrySet()) {
