@@ -19,9 +19,8 @@ public class Query {
 			String json = this.sendGet("https://use.gameapis.net/mcpe/query/extensive/"+ this.ip + ":" + this.port);
 			return new QueryData(json);
 		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 	
     private String sendGet(String url) throws Exception {

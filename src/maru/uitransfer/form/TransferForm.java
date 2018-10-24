@@ -22,18 +22,19 @@ public class TransferForm {
 		this.plugin = plugin;
 		drawUI();
 	}
+
 	private void drawUI() {
 		ConfigSection section = plugin.getConfig().getSection("list");
 		Map<Object, String> online = new HashMap<>();
-		
+
 		section.entrySet().parallelStream().forEach(entry -> {
 			String[] iport = entry.getValue().toString().split(":");
 			Query query = new Query(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
 			QueryData data = query.send();
-			String msg = data.status ? "Á¢¼ÓÀÚ ¼ö: (" + data.onlinePlayers + "/" + data.maxPlayers + ")" : "¼­¹ö OFF";
+			String msg = data.status ? "í”Œë ˆì´ì–´: (" + data.onlinePlayers + "/" + data.maxPlayers + ")" : "ì„œë²„ OFF";
 			online.put(entry.getKey(), msg);
 		});
-		
+
 		for (Entry<String, Object> entry : section.entrySet()) {
 			form.addButton(new ElementButton(entry.getKey() + "\n" + online.get(entry.getKey())));
 			extraButtonData.put(button_id++, entry.getValue().toString());
@@ -43,7 +44,7 @@ public class TransferForm {
 	public String getButtonData(int id) {
 		return this.extraButtonData.get(id);
 	}
-	
+
 	public FormWindowSimple getForm() {
 		return this.form;
 	}

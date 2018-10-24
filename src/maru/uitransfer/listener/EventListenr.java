@@ -24,13 +24,13 @@ import maru.uitransfer.query.QueryData;
 
 public class EventListenr implements Listener {
 	private Main plugin;
-	
+
 	private Map<Integer, TransferForm> requestList = new HashMap<>();
-	
+
 	public EventListenr(Main plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (this.plugin.getConfig().getBoolean("joinTransfer")) {
@@ -39,10 +39,10 @@ public class EventListenr implements Listener {
 				public void onRun(int currentTick) {
 					showTransferForm(event.getPlayer());
 				}
-			}, 20 * 3); 
+			}, 20 * 3);
 		}
 	}
-	
+
 	@EventHandler
 	public void onFormResponse(PlayerFormRespondedEvent event) {
 		if (requestList.containsKey(event.getFormID())) {
@@ -51,28 +51,29 @@ public class EventListenr implements Listener {
 			Player player = event.getPlayer();
 			if (response == null) {
 				if (this.plugin.getConfig().getBoolean("joinTransfer")) {
-					player.kick(TextFormat.DARK_AQUA + "¼­¹ö¸¦ ¼±ÅÃÇÏÁö ¾Ê¾Æ¼­ °­ÅğÃ³¸®µÇ¾ú½À´Ï´Ù.", false);
+					player.kick(TextFormat.DARK_AQUA + "ì„œë²„ë¥¼ ì„ íƒí•˜ì§€ ì•Šì•„ì„œ ê°•í‡´ì²˜ë¦¬ë˜ì—ˆìŠµë‹ˆë‹¤.", false);
 				}
 				return;
 			}
 			String address = form.getButtonData(response.getClickedButtonId());
 			String[] iport = address.split(":");
-			InetSocketAddress socket = new InetSocketAddress(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
+			InetSocketAddress socket = new InetSocketAddress(iport[0],
+					(iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
 			player.transfer(socket);
-			
+
 			requestList.remove(event.getFormID());
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (this.plugin.getConfig().getBoolean("joinTransfer")) {
 			Player player = event.getPlayer();
 			event.setCancelled();
-			player.sendTip("UI°¡ º¸ÀÌÁö ¾Ê´Â´Ù¸é /¼­¹öÀÌµ¿ ¸í·É¾î¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä");
+			player.sendTip("UIê°€ ë³´ì´ì§€ ì•ŠëŠ”ë‹¤ë©´ /ì„œë²„ì´ë™ ëª…ë ¹ì–´ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”");
 		}
 	}
-	
+
 	@EventHandler
 	public void onQueryReceived(QueryRegenerateEvent event) {
 		if (this.plugin.getConfig().getBoolean("joinTransfer")) {
@@ -83,23 +84,23 @@ public class EventListenr implements Listener {
 				String[] iport = entry.getValue().toString().split(":");
 				Query query = new Query(iport[0], (iport.length < 2) ? 19132 : Integer.parseInt(iport[1]));
 				QueryData data = query.send();
-				event.setPlayerCount((int) (event.getPlayerCount() + data.onlinePlayers));
-				event.setMaxPlayerCount((int) (event.getMaxPlayerCount() + data.maxPlayers));
+				event.setPlayerCount((int) (event.getPlayerCount() + ((data == null) ? 0 : data.onlinePlayers)));
+				event.setMaxPlayerCount((int) (event.getMaxPlayerCount() + ((data == null) ? 0 : data.maxPlayers) + 1));
 			});
 		}
 	}
-	
+
 	public void showTransferForm(Player player) {
 		Server.getInstance().getScheduler().scheduleAsyncTask(plugin, new AsyncTask() {
-			
+
 			@Override
 			public void onRun() {
-				TransferForm form = new TransferForm("¼­¹ö ¸ñ·Ï", "Á¢¼ÓÇÒ ¼­¹ö¸¦ ¼±ÅÃÇÏ¼¼¿ä.", plugin);
-				
+				TransferForm form = new TransferForm("ì„œë²„ ëª©ë¡", "ì ‘ì†í•  ì„œë²„ë¥¼ ì„ íƒí•˜ì„¸ìš”.", plugin);
+
 				int id = player.showFormWindow(form.getForm());
 				requestList.put(id, form);
 			}
 		});
 	}
-	
+
 }

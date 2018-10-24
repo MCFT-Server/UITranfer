@@ -22,6 +22,6 @@ public class Main extends PluginBase {
 	}
 	
 	public void registerCommands() {
-		this.getServer().getCommandMap().register("ServerTransfer", new ServerTransferCommand("¼­¹öÀÌµ¿", this));
+		this.getServer().getCommandMap().register("ServerTransfer", new ServerTransferCommand("ì„œë²„ì´ë™", this));
 	}
 }

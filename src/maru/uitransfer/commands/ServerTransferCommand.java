@@ -15,10 +15,10 @@ public class ServerTransferCommand extends PluginCommand<Main> {
 	@Override
 	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(TextFormat.RED + "ÀÌ ¸í·É¾î´Â ¼­¹ö ³»¿¡¼­¸¸ ÀÔ·Â °¡´ÉÇÕ´Ï´Ù.");
+			sender.sendMessage(TextFormat.RED + "ì´ ëª…ë ¹ì–´ëŠ” ì„œë²„ ë‚´ì—ì„œë§Œ ì…ë ¥ ê°€ëŠ¥í•©ë‹ˆë‹¤.");
 			return true;
 		}
-		this.getPlugin().getEventListener().showTransferForm((Player)sender);
+		this.getPlugin().getEventListener().showTransferForm((Player) sender);
 		return true;
 	}
 }
